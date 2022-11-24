@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-material.css';
-import  IconButton  from '@mui/material/IconButton';
-import  DeleteIcon  from '@mui/icons-material/Delete';
-import Addcar from './Addcar';
-
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-material.css";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Addcar from "./Addcar";
+import { FaceRetouchingNaturalSharp } from "@mui/icons-material";
 
 function Carlist() {
   // PITÄISI LUODA TILA, JOHON SAADAAN LISTA AUTOJA
@@ -19,6 +19,20 @@ function Carlist() {
     console.log(cars);
   }, []);
 
+  const addCar = (car) => {
+    console.log("Carlist.js tiedoston addCar metodissa");
+    // REST RAJAPINTAA KÄYTTÄEN PITÄÄ SAADA AUTO LISÄTTYÄ
+    fetch("https://carrestapi.herokuapp.com/cars", {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(car),
+    }).then((response) => {
+      if (response.ok) {
+        fetchCars();
+      }
+    });
+  };
+
   const fetchCars = () => {
     // TÄHÄN TULEE FETCH, JOLLA HAETAAN TIEDOT
     // AUTOISTA
@@ -29,45 +43,46 @@ function Carlist() {
 
   const deleteCar = (link) => {
     console.log("DELETE FUNKTIO");
-    fetch(link, { method: 'DELETE' })
-    .then(response => {
-        if(response.ok) {
-            fetchCars();
-        }
-    })
-
-  }
+    fetch(link, { method: "DELETE" }).then((response) => {
+      if (response.ok) {
+        fetchCars();
+      }
+    });
+  };
 
   const [columnDefs, setColumnDefs] = useState([
     { field: "brand", sortable: true, filter: true },
-    { field: "model", sortable: true, filter: true  },
-    { field: "color", sortable: true, filter: true  },
-    { field: "fuel", sortable: true, filter: true  },
-    { field: "year", sortable: true, filter: true  },
-    { field: "price", sortable: true, filter: true  },
+    { field: "model", sortable: true, filter: true },
+    { field: "color", sortable: true, filter: true },
+    { field: "fuel", sortable: true, filter: true },
+    { field: "year", sortable: true, filter: true },
+    { field: "price", sortable: true, filter: true },
     {
-        headerName: '',
-        width: 100,
-        field: '_links.self.href',
-        cellRenderer: params =>
+      headerName: "",
+      width: 100,
+      field: "_links.self.href",
+      cellRenderer: (params) => (
         <IconButton color="error" onClick={() => deleteCar(params.value)}>
-            <DeleteIcon />
+          <DeleteIcon />
         </IconButton>
-    }
+      ),
+    },
   ]);
 
   return (
     <>
-        <Addcar />
+      <Addcar addCar={addCar} />
       <div style={{ height: "100%", boxSizing: "border-box" }}>
-        <div style={{height: 600, width: '90%'}} className="ag-theme-material">
-          <AgGridReact 
-            rowData={cars}  
+        <div
+          style={{ height: 600, width: "90%" }}
+          className="ag-theme-material"
+        >
+          <AgGridReact
+            rowData={cars}
             columnDefs={columnDefs}
             paginationPageSize={10}
-            pagination={true} 
-            />
-        
+            pagination={true}
+          />
         </div>
       </div>
     </>
