@@ -7,7 +7,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 
-export default function Addcar({addCar}) {
+export default function Editcar({updateCar, params}) {
   // KOMPONENTTIIN TÄYTY LUODA TILA, JOLLA SAADAAN KONTROLLOITUA
   // DIALOGI TOIMII IKKUNANA JA AUKEAA MODAALISESTI
   const [open, setOpen] = React.useState(false);
@@ -23,17 +23,28 @@ export default function Addcar({addCar}) {
   const handleClickOpen = () => {
     console.log("PAINETTIIN LISAA AUTO");
     setOpen(true);
+    setCar({
+        brand: params.data.brand,
+        model: params.data.model,
+        color: params.data.color,
+        fuel: params.data.fuel,
+        price: params.data.price,
+        year: params.data.year
+    })
   };
 
   const handleClose = () => {
     console.log("HANDLE CLOSE KUTSUTTU");
-
-    addCar(car);
     setOpen(false);
   };
 
   const handleCancel = () => {
       console.log("PAINETTIIN CANCEL");
+      setOpen(false);
+  }
+
+  const handleSave = () => {
+      updateCar(car, params.value);
       setOpen(false);
   }
 
@@ -45,7 +56,7 @@ export default function Addcar({addCar}) {
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Add car
+        EDIT
       </Button>
 
       <Dialog onClose={handleClose} open={open}>
@@ -113,7 +124,7 @@ export default function Addcar({addCar}) {
             onChange={inputChanged}
           />
           <DialogActions>
-            <Button onClick={handleClose}>Save</Button>
+            <Button onClick={handleSave}>Save</Button>
             <Button onClick={handleCancel}>Cancel</Button>
           </DialogActions>
         </DialogContent>

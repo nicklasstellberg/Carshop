@@ -5,7 +5,8 @@ import "ag-grid-community/styles/ag-theme-material.css";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Addcar from "./Addcar";
-import { FaceRetouchingNaturalSharp } from "@mui/icons-material";
+import Editcar from "./Editcar";
+import Button from '@mui/material/Button';
 
 function Carlist() {
   // PITÄISI LUODA TILA, JOHON SAADAAN LISTA AUTOJA
@@ -21,10 +22,10 @@ function Carlist() {
 
   const addCar = (car) => {
     console.log("Carlist.js tiedoston addCar metodissa");
-    // REST RAJAPINTAA KÄYTTÄEN PITÄÄ SAADA AUTO LISÄTTYÄ
+    // REST RAJAPINTAA KÄYTTÄEN PITÄISI SAADA AUTO LISÄTTYÄ
     fetch("https://carrestapi.herokuapp.com/cars", {
       method: "POST",
-      headers: { "Content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(car),
     }).then((response) => {
       if (response.ok) {
@@ -50,6 +51,19 @@ function Carlist() {
     });
   };
 
+  const updateCar = (updateCar, link) => {
+    console.log(" UPDATE FUNKTIO");
+    fetch(link, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updateCar),
+    }).then((response) => {
+      if (response.ok) {
+        fetchCars();
+      }
+    });
+  };
+
   const [columnDefs, setColumnDefs] = useState([
     { field: "brand", sortable: true, filter: true },
     { field: "model", sortable: true, filter: true },
@@ -62,9 +76,22 @@ function Carlist() {
       width: 100,
       field: "_links.self.href",
       cellRenderer: (params) => (
+        
         <IconButton color="error" onClick={() => deleteCar(params.value)}>
           <DeleteIcon />
         </IconButton>
+
+        
+
+      ),
+    },
+    {
+      headerName: "",
+      width: 100,
+      field: "_links.self.href",
+      cellRenderer: (params) => (
+        <Editcar updateCar={updateCar}  params={params} />
+
       ),
     },
   ]);
